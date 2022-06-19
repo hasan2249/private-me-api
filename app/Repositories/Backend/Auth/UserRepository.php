@@ -259,7 +259,7 @@ class UserRepository extends BaseRepository
             }
 
             if (isset($data['answer'])) {
-                $user->question_id = $data['answer'];
+                $user->answer = $data['answer'];
             }
             $user->save();
             $user->status = isset($data['status']) && $data['status'] == '1' ? 1 : 0;

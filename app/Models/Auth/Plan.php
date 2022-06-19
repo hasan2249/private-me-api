@@ -17,6 +17,7 @@ class Plan extends BaseModel
         'price_month',
         'storage',
         'free_storage',
+        'friends',
         'chat'
     ];
 }

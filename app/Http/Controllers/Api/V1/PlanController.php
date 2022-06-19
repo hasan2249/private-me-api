@@ -25,6 +25,7 @@ class PlanController extends APIController
             "storage" => 'required',
             "free_storage" => 'required',
             "chat" => 'required',
+            "friends" => 'required',
         ]);
 
         Plan::create($request->all());
