@@ -9,6 +9,7 @@ use App\Http\Requests\Backend\Auth\User\UpdateUserRequest;
 use App\Http\Requests\Backend\Api\ApiRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Auth\User;
+use App\Models\Auth\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Backend\Auth\UserRepository;
@@ -16,6 +17,9 @@ use Validator;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Exists;
+
+define('_500MB', 500000000);
 
 /**
  * @group Authentication
@@ -27,7 +31,6 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends APIController
 {
     protected $repository;
-
     /**
      * __construct.
      *
@@ -113,6 +116,20 @@ class UserController extends APIController
 
     public function uploadFile(ApiRequest $request)
     {
+        $user_folder = storage_path('app/public/' . auth()->user()->id);
+        $limit_size = _500MB;
+        $user = Package::where('user_id', auth()->user()->id)->first();
+        if ($user) {
+            if ($user->size) {
+                $limit_size = (int) $user->size;
+            }
+        }
+
+        // Folder should be not more than 500MB
+        if ($this->repository->getfolderSize($user_folder) >= $limit_size) {
+            return '{"message": "Your free space has been excceded, please subscribe for more space." , "success":"false"}';
+        }
+        clearstatcache();
         $files = $request->file('files');
         $paths = "";
         if (isset($files)) {
@@ -233,6 +250,18 @@ class UserController extends APIController
 
     public function uploadImage(ApiRequest $request)
     {
+        $user_folder = storage_path('app/public/' . auth()->user()->id);
+        $limit_size = _500MB;
+        $user = Package::where('user_id', auth()->user()->id)->first();
+        if ($user) {
+            $limit_size = (int) $user->size;
+        }
+        // Folder should be not more than 500MB
+        if ($this->repository->getfolderSize($user_folder) >= $limit_size) {
+            return '{"message": "Your free space has been excceded, please subscribe for more space.", "success":"false"}';
+        }
+        clearstatcache();
+
         $images = $request->file('images');
         $paths = "";
         if (isset($images)) {
@@ -249,6 +278,18 @@ class UserController extends APIController
 
     public function uploadVedio(ApiRequest $request)
     {
+        $user_folder = storage_path('app/public/' . auth()->user()->id);
+        $limit_size = _500MB;
+        $user = Package::where('user_id', auth()->user()->id)->first();
+        if ($user) {
+            $limit_size = (int) $user->size;
+        }
+        // Folder should be not more than 500MB
+        if ($this->repository->getfolderSize($user_folder) >= $limit_size) {
+            return '{"message": "Your free space has been excceded, please subscribe for more space.", "success":"false"}';
+        }
+        clearstatcache();
+
         $videos = $request->file('videos');
         $paths = "";
         if (isset($videos)) {

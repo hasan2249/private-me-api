@@ -19,6 +19,7 @@ class Packages extends Migration
             $table->string('name')->nullable();
             $table->string('month')->nullable();
             $table->string('year')->nullable();
+            $table->string('size_bytes')->nullable();
             $table->integer('price')->nullable();
             $table->string('card_holder_name')->nullable();
             $table->string('card_number')->nullable();

@@ -88,6 +88,17 @@ class UserRepository extends BaseRepository
         return $all_friends_request;
     }
 
+    function getfolderSize($dir)
+    {
+        $size = 0;
+
+        foreach (glob(rtrim($dir, '/') . '/*', GLOB_NOSORT) as $each) {
+            $size += is_file($each) ? filesize($each) : $this->getfolderSize($each);
+        }
+
+        return $size;
+    }
+
     function getInternalFilesCount($dir)
     {
         $files_count = 0;

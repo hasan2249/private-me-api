@@ -15,6 +15,7 @@ class Package extends BaseModel
         'month',
         'year',
         'price',
+        'size_bytes',
         'card_holder_name',
         'card_number',
         'security_code',
