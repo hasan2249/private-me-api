@@ -16,4 +16,14 @@ class HomeController extends Controller
     {
         return view('frontend.index');
     }
+
+    public function privacyAr()
+    {
+        return view('frontend.ar-privace-policy');
+    }
+
+    public function privacyEn()
+    {
+        return view('frontend.en-privace-policy');
+    }
 }
