@@ -79,14 +79,38 @@ class UserRepository extends BaseRepository
     public function checkFriendRequest()
     {
         $user = auth()->user();
-        $freiends_requeset = Frindship::where(['second_user_id' => auth()->user()->id, 'accept' => false])->get(['fisrt_user_id AS id']);
+        // people send freind request to me and i have not accept yet, and people who i request and they accept my request
+        $freiends_requeset = Frindship::where('second_user_id', auth()->user()->id)
+            ->where('accept', false)
+            ->orWhere(function ($q) {
+                $q->where('fisrt_user_id', auth()->user()->id);
+                $q->where('accept', true);
+            })
+            ->get(['accept', 'fisrt_user_id AS sender_id', 'second_user_id AS reciver_id']);
         $friends = [];
+        $reciver_ = [];
         foreach ($freiends_requeset as $friend) {
-            array_push($friends, $friend->id);
+            if ($friend->accept == true) {
+                array_push($friends, $friend->reciver_id);
+                array_push($reciver_, $friend->reciver_id);
+            } else {
+                array_push($friends, $friend->sender_id);
+            }
         }
         $all_friends_request = User::find($friends);
-        return $all_friends_request;
+
+        $arr = $all_friends_request->toArray();
+        foreach ($arr as $key => $item) {
+            if (in_array($item['id'], $reciver_)) {
+                $arr[$key]['msg'] = 'accept my request';
+            } else {
+                // some one ask you for accept freindship
+                $arr[$key]['msg'] = 'friend request';
+            }
+        }
+        return $arr;
     }
+
 
     function getfolderSize($dir)
     {
