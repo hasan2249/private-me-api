@@ -18,8 +18,8 @@ class UserResource extends Resource
      */
     public function toArray($request)
     {
-        $freiends_1 = Frindship::where('fisrt_user_id', $this->id)->get(['second_user_id AS id']);
-        $freiends_2 = Frindship::where('second_user_id', $this->id)->get(['fisrt_user_id AS id']);
+        $freiends_1 = Frindship::where('fisrt_user_id', $this->id)->where('accept', true)->get(['second_user_id AS id']);
+        $freiends_2 = Frindship::where('second_user_id', $this->id)->where('accept', true)->get(['fisrt_user_id AS id']);
         $friends = [];
         foreach ($freiends_1 as $friend) {
             array_push($friends, $friend->id);
@@ -44,6 +44,7 @@ class UserResource extends Resource
 
         return [
             'id' => $this->id,
+            'uuid' => $this->uuid,
             'first_name' => $this->first_name,
             // 'last_name' => $this->last_name,
             'email' => $this->email,

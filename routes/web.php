@@ -40,4 +40,4 @@ Route::get('link-storage', function () {
     return 'success';
 });
 
-Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetFormApi'])->name('frontend.auth.password.reset.form');
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('frontend.auth.password.reset.form');

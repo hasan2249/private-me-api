@@ -79,7 +79,7 @@ class UserRepository extends BaseRepository
     public function checkFriendRequest()
     {
         $user = auth()->user();
-        $freiends_requeset = Frindship::where(['fisrt_user_id' => auth()->user()->id, 'accept' => false])->get(['second_user_id AS id']);
+        $freiends_requeset = Frindship::where(['second_user_id' => auth()->user()->id, 'accept' => false])->get(['fisrt_user_id AS id']);
         $friends = [];
         foreach ($freiends_requeset as $friend) {
             array_push($friends, $friend->id);
