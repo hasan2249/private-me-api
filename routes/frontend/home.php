@@ -34,3 +34,9 @@ Route::group(['middleware' => ['auth', 'password_expires']], function () {
         Route::patch('profile/update', [ProfileController::class, 'update'])->name('profile.update');
     });
 });
+
+
+
+Route::get('req', 'HomeController@request');
+Route::get('payment/{price}', 'HomeController@payment')->name('payment');
+Route::get('payment-status', 'HomeController@checkStatus')->name('payment.status');

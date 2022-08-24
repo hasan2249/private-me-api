@@ -10,7 +10,3 @@ Route::post('get-permission', 'DashboardController@getPermissionByRole')->name('
 /* Route::get('profile/edit', 'DashboardController@editProfile')->name('profile.edit');
 Route::patch('profile/update', 'DashboardController@updateProfile')
     ->name('profile.update'); */
-
-Route::get('req', 'DashboardController@request');
-Route::get('payment/{price}', 'DashboardController@payment')->name('payment');
-Route::get('payment-status', 'DashboardController@checkStatus')->name('payment.status');

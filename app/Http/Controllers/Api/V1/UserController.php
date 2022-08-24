@@ -114,6 +114,11 @@ class UserController extends APIController
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
+    public function readNotification(ApiRequest $request)
+    {
+        $this->repository->readNotification($request->id);
+    }
+
     public function uploadFile(ApiRequest $request)
     {
         $user_folder = storage_path('app/public/' . auth()->user()->id);
@@ -143,6 +148,53 @@ class UserController extends APIController
         } else {
             return '{"message": "Error, there is no file to upload"}';
         }
+    }
+
+    public function getAllFilesInDir(ApiRequest $request, $type)
+    {
+        $file = '';
+        $link = '';
+        if (isset($type)) {
+            $file = __DIR__ . '/../../../../../storage/app/public/' . auth()->user()->id . '/' . $type;
+            $link = 'storage/' . auth()->user()->id . '/' . $type . "/";
+        } else {
+            $file = __DIR__ . '/../../../../../storage/app/public/' . auth()->user()->id;
+            $link = 'storage/' . auth()->user()->id . "/";
+        }
+        if (file_exists($file)) {
+            // $files = [];
+            $filess = [];
+            $count = 0;
+
+            $all_files = array();
+            foreach (scandir($file) as $fil) {
+                if ($fil != '.' && $fil != '..') {
+
+                    // Files count in Folder
+                    $directory = $file . "/" . $fil;
+                    $files2 = glob($directory . "/*");
+                    if ($files2) {
+                        $count += count($files2);
+
+                        // return 4 files from directory
+                        $internal_files = scandir($directory);
+                        foreach ($internal_files as $internal_file) {
+                            if ($internal_file == '.' || $internal_file == '..') {
+                                continue;
+                            }
+                            $file_ = asset($link . $fil . '/' . ($internal_file ?? null)); // because [0] = "." [1] = ".." 
+                            array_push($all_files, array('file' => $file_, 'date' => date("F d Y H:i:s.", filemtime($file . '/' . $fil))));
+                        }
+
+                        // array_push($files, array('file' => $fil, 'link' => asset($link . $fil), 'count' => $filecount, 'files' => $all_files, 'date' => date("F d Y H:i:s.", filemtime($file . '/' . $fil))));
+                    }
+                }
+            }
+            $filess +=  ["total" => $count];
+            $filess += ["data" => $all_files];
+            return response()->json($filess);
+        }
+        return response()->json(["message" => "Folder Not Found!"]);
     }
 
     public function getFiles(ApiRequest $request)

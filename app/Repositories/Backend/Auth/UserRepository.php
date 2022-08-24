@@ -72,8 +72,7 @@ class UserRepository extends BaseRepository
         $user = auth()->user();
         $relation = Frindship::whereIn('fisrt_user_id', [auth()->user()->id, $friend_id])
             ->whereIn('second_user_id', [auth()->user()->id, $friend_id])->first();
-        $relation->accept = 0;
-        $relation->save();
+        $relation->delete();
     }
 
     public function checkFriendRequest()
@@ -86,15 +85,18 @@ class UserRepository extends BaseRepository
                 $q->where('fisrt_user_id', auth()->user()->id);
                 $q->where('accept', true);
             })
-            ->get(['accept', 'fisrt_user_id AS sender_id', 'second_user_id AS reciver_id']);
+            ->get(['is_read', 'accept', 'fisrt_user_id AS sender_id', 'second_user_id AS reciver_id']);
         $friends = [];
         $reciver_ = [];
+        $is_read = [];
         foreach ($freiends_requeset as $friend) {
             if ($friend->accept == true) {
                 array_push($friends, $friend->reciver_id);
                 array_push($reciver_, $friend->reciver_id);
+                array_push($is_read, $friend->is_read);
             } else {
                 array_push($friends, $friend->sender_id);
+                array_push($is_read, $friend->is_read);
             }
         }
         $all_friends_request = User::find($friends);
@@ -102,10 +104,12 @@ class UserRepository extends BaseRepository
         $arr = $all_friends_request->toArray();
         foreach ($arr as $key => $item) {
             if (in_array($item['id'], $reciver_)) {
-                $arr[$key]['msg'] = 'accept my request';
+                $arr[$key]['msg'] = 1;
+                $arr[$key]['is_read'] = $is_read[$key];
             } else {
                 // some one ask you for accept freindship
-                $arr[$key]['msg'] = 'friend request';
+                $arr[$key]['msg'] = 0;
+                $arr[$key]['is_read'] = $is_read[$key];
             }
         }
         return $arr;
@@ -128,13 +132,20 @@ class UserRepository extends BaseRepository
         $files_count = 0;
         foreach (glob("${dir}/*") as $fn) {
             if (is_dir($fn)) {
-                $files_count  = $this->getInternalFilesCount($fn);
+                $files_count  += $this->getInternalFilesCount($fn);
             } else {
                 $files_count += 1;
             }
         }
 
         return $files_count;
+    }
+
+    function readNotification($id)
+    {
+        $frindship = Frindship::find($id);
+        $frindship->is_read = 1;
+        $frindship->save();
     }
 
 

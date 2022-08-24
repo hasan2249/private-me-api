@@ -57,6 +57,9 @@ Route::group(['namespace' => 'Api\V1', 'prefix' => 'v1', 'as' => 'v1.'], functio
         Route::get('get-plans', 'PlanController@index');
         Route::post('add-plans', 'PlanController@add');
         Route::post('remove-plans', 'PlanController@remove');
+
+        Route::get('get-all-files/{type}', 'UserController@getAllFilesInDir');
+        Route::post('read-notification', 'UserController@readNotification');
     });
 
     // forgot & reset password

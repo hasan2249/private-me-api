@@ -102,8 +102,8 @@ trait UserMethods
 
     public function getMyFriends()
     {
-        $freiends_1 = Frindship::where('fisrt_user_id', auth()->user()->id)->get(['second_user_id AS id']);
-        $freiends_2 = Frindship::where('second_user_id', auth()->user()->id)->get(['fisrt_user_id AS id']);
+        $freiends_1 = Frindship::where('fisrt_user_id', auth()->user()->id)->where('accept', 1)->get(['second_user_id AS id']);
+        $freiends_2 = Frindship::where('second_user_id', auth()->user()->id)->where('accept', 1)->get(['fisrt_user_id AS id']);
         $friends = [];
         foreach ($freiends_1 as $friend) {
             array_push($friends, $friend->id);

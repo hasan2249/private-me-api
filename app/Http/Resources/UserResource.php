@@ -18,8 +18,8 @@ class UserResource extends Resource
      */
     public function toArray($request)
     {
-        $freiends_1 = Frindship::where('fisrt_user_id', $this->id)->where('accept', true)->get(['second_user_id AS id']);
-        $freiends_2 = Frindship::where('second_user_id', $this->id)->where('accept', true)->get(['fisrt_user_id AS id']);
+        $freiends_1 = Frindship::where('fisrt_user_id', $this->id)->where('accept', 1)->get(['second_user_id AS id']);
+        $freiends_2 = Frindship::where('second_user_id', $this->id)->where('accept', 1)->get(['fisrt_user_id AS id']);
         $friends = [];
         foreach ($freiends_1 as $friend) {
             array_push($friends, $friend->id);
@@ -29,18 +29,33 @@ class UserResource extends Resource
             array_push($friends, $friend->id);
         }
 
-        $all_friends = User::find($friends);
+        $all_friends = User::select(['id', 'uuid', 'first_name', 'avatar_location'])->whereIn('id', $friends)->get();
 
 
         //who asked my for frien relation
-        $friend_requests_1 = $this->friends2->where('accept', 0)->toArray();
-        $friend_requests = Datatables::of($friend_requests_1)
-            ->addColumn('image', function ($friend) {
-                return $friend->user2->first()->avatar_location;
-            })
-            ->addColumn('username', function ($friend) {
-                return $friend->user2->first()->first_name;
-            })->make();
+        // $friend_requests_1 = $this->friends2->where('accept', 0)->toArray();
+
+
+        // $friend_requests = Datatables::of($friend_requests_1)
+        //     ->addColumn('image', function ($friend) {
+        //         return $friend->user2->first()->avatar_location;
+        //     })
+        //     ->addColumn('username', function ($friend) {
+        //         return $friend->user2->first()->first_name;
+        //     })->make();
+
+        $freiends_3 = Frindship::where('fisrt_user_id', $this->id)->where('accept', 0)->get(['second_user_id AS id']);
+        $freiends_4 = Frindship::where('second_user_id', $this->id)->where('accept', 0)->get(['fisrt_user_id AS id']);
+        $friends_request = [];
+        foreach ($freiends_3 as $friend) {
+            array_push($friends_request, $friend->id);
+        }
+
+        foreach ($freiends_4 as $friend) {
+            array_push($friends_request, $friend->id);
+        }
+
+        $all_friends_request = User::select(['id', 'uuid', 'first_name', 'avatar_location'])->whereIn('id', $friends_request)->get();
 
         return [
             'id' => $this->id,
@@ -55,7 +70,7 @@ class UserResource extends Resource
             'role' => optional($this->roles()->first())->name,
             //'permissions' => $this->permissions()->get(),
             'friends' => $all_friends,
-            'friend-requests' => $friend_requests,
+            'friend-requests' => $all_friends_request,
             'status' => $this->status,
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),

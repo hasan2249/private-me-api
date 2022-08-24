@@ -17,6 +17,7 @@ class Frindships extends Migration
         Schema::create('frindships', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->boolean('accept')->default(0);
+            $table->boolean('is_read')->default(0);
 
             $table->bigInteger('fisrt_user_id')->unsigned();
             $table->foreign('fisrt_user_id')->references('id')->on('users');
